@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Winemath - home winemaking corrections without the folklore</title>
+<style>
+:root{--bg:#150d14;--card:#221320;--ink:#f3e9f0;--mut:#b39cb0;--grape:#b47ae0;--line:#3a2437}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--ink);font:17px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif;padding:40px 20px}
+main{max-width:760px;margin:0 auto}
+h1{font-size:44px;letter-spacing:-.5px}h1 span{color:var(--grape)}
+p.lede{color:var(--mut);font-size:19px;margin:18px 0 26px}
+a.btn{display:inline-block;background:var(--grape);color:#1c0d1a;font-weight:700;padding:13px 26px;border-radius:10px;text-decoration:none;font-size:18px}
+ul{margin:34px 0;list-style:none;padding:0}
+li{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin-bottom:10px}
+li b{color:var(--grape)}
+small{display:block;color:var(--mut);margin-top:36px;font-size:14px}
+</style>
+</head>
+<body>
+<main>
+<h1>Wine<span>math</span></h1>
+<p class="lede">Your hydrometer says 18 Brix and the recipe just says "add sugar to taste". The forums quote sulfite numbers without asking your pH. Winemath turns the readings you actually took into grams and millilitres: sugar, acid, sulfite and fortifying spirit, with every rule of thumb labeled.</p>
+<a class="btn" href="app.html">Fix my must</a>
+<ul>
+<li><b>Chapitalization</b> - grams of sugar to move from the Brix you measured to the Brix you need, and the alcohol that buys you.</li>
+<li><b>Acid correction</b> - tartaric to raise, calcium carbonate or potassium bicarbonate to lower, in grams for your volume.</li>
+<li><b>SO2 by pH</b> - the equilibrium most advice skips: at pH 3.6 you need four times the free sulfite of pH 3.0. Get the real potassium metabisulfite weight for your wine.</li>
+<li><b>Fortification</b> - Pearson's square for Port-style wine: how much spirit reaches your target ABV.</li>
+<li><b>Blend and dilute</b> - what two wines become together, and the water that tames a hot ferment.</li>
+<li><b>Honest labels</b> - published rules of thumb are labeled as such; the ideal-solution model ignores volume change and lab error.</li>
+</ul>
+<small>Runs entirely in your browser. Brix/SG and ABV conversions, acid rules and sulfite targets are commonly published home-winemaking values; the molecular SO2 fraction uses the published equilibrium formula with pKa 1.81. Measure with real instruments and add corrections gradually.</small>
+</main>
+</body>
+</html>
