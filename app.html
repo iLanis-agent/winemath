@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Winemath - must and wine corrections</title>
+<style>
+:root{--bg:#150d14;--card:#221320;--ink:#f3e9f0;--mut:#b39cb0;--grape:#b47ae0;--line:#3a2437;--ok:#4ade80;--warn:#fbbf24;--bad:#f87171}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;padding:26px 14px 60px}
+main{max-width:860px;margin:0 auto}
+a.back{color:var(--mut);text-decoration:none;font-size:14px}
+h1{font-size:30px;margin:6px 0 2px}h1 span{color:var(--grape)}
+.sub{color:var(--mut);margin-bottom:20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px}
+.card h2{font-size:19px;margin-bottom:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
+label{display:block;color:var(--mut);font-size:13px;margin-bottom:4px}
+input,select{width:100%;background:#1a0f18;border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:9px 10px;font-size:16px}
+button.ghost{background:#2e1a2b;border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:8px 12px;font-size:14px;cursor:pointer;margin:10px 6px 0 0}
+button.ghost:hover{border-color:var(--grape)}
+.verdicts{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-top:12px}
+.vc{background:#1a0f18;border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.vc .k{color:var(--mut);font-size:12px;letter-spacing:1px}
+.vc .n{font-size:24px;font-weight:700;margin:4px 0}
+.vc .h{color:var(--mut);font-size:13px}
+table{width:100%;border-collapse:collapse;font-size:15px;margin-top:12px}
+td,th{padding:7px 8px;border-bottom:1px solid var(--line);text-align:left}
+td.v{font-weight:700;white-space:nowrap}
+th{color:var(--mut);font-weight:600;font-size:13px}
+.note{color:var(--mut);font-size:13px;margin-top:10px}
+.err{display:none;background:#3a1220;border:1px solid var(--bad);color:#fecaca;border-radius:10px;padding:12px 14px;margin-bottom:14px}
+.tag{display:inline-block;font-size:11px;font-weight:700;border-radius:6px;padding:2px 7px;letter-spacing:.5px}
+.tag.ok{background:#14532d;color:#86efac}
+.tag.warn{background:#513b06;color:#fcd34d}
+</style>
+</head>
+<body>
+<main>
+<a class="back" href="index.html">&larr; Winemath</a>
+<h1>Wine<span>math</span></h1>
+<p class="sub">Enter your batch volume once; every section works from it. All rules of thumb are labeled.</p>
+
+<div class="err" id="err"></div>
+
+<div class="card">
+<h2>1. Batch and must reading</h2>
+<div class="grid">
+<div><label>Volume (L)</label><input id="vol" type="number" step="any" value="19"></div>
+<div><label>Current Brix</label><input id="brix" type="number" step="any" value="18"></div>
+<div><label>Target Brix</label><input id="tbrix" type="number" step="any" value="22"></div>
+<div><label>Wine style</label><select id="style"><option value="red">Red</option><option value="white">White</option></select></div>
+</div>
+<div class="verdicts" id="must"></div>
+</div>
+
+<div class="card">
+<h2>2. Sugar to add (chapitalization)</h2>
+<table id="chap"></table>
+<p class="note">1 Brix is 10 g of sugar per litre of must (definition, ideal volume - adding sugar also raises volume a little). Published conversion: potential ABV = Brix x 0.55. In cool climates and for legal limits, check your local rules before chaptalizing.</p>
+</div>
+
+<div class="card">
+<h2>3. Acid correction</h2>
+<div class="grid">
+<div><label>Current TA (g/L as tartaric)</label><input id="ta" type="number" step="any" value="5"></div>
+<div><label>Target TA (g/L)</label><input id="tta" type="number" step="any" value="7"></div>
+<div><label>Lowering agent</label><select id="acidChem"><option value="caco3">Calcium carbonate</option><option value="khco3">Potassium bicarbonate</option></select></div>
+</div>
+<table id="acid"></table>
+<p class="note">Published rules of thumb: 1 g/L tartaric acid raises TA about 1 g/L; 1 g/L calcium carbonate lowers it about 1 g/L; potassium bicarbonate about 0.6 g/L per g/L. Commonly published targets: reds 6-8 g/L, whites 6.5-8.5 g/L (as tartaric). Bench-test first: pH shift does not track TA one-for-one.</p>
+</div>
+
+<div class="card">
+<h2>4. Sulfite (SO2) by pH</h2>
+<div class="grid">
+<div><label>Wine pH</label><input id="ph" type="number" step="any" value="3.4"></div>
+</div>
+<div class="verdicts" id="so2"></div>
+<p class="note" id="so2note"></p>
+</div>
+
+<div class="card">
+<h2>5. Fortify (Pearson's square)</h2>
+<div class="grid">
+<div><label>Wine ABV (%)</label><input id="fabv" type="number" step="any" value="12"></div>
+<div><label>Spirit ABV (%)</label><input id="sabv" type="number" step="any" value="40"></div>
+<div><label>Target ABV (%)</label><input id="ftabv" type="number" step="any" value="17"></div>
+</div>
+<table id="fort"></table>
+<p class="note">Pearson's square (published blending rule): parts spirit per parts wine = (target - wine) / (spirit - target). Distillation of alcohol is licensed in many places - use legally purchased spirit.</p>
+</div>
+
+<div class="card">
+<h2>6. Ferment result, blend and dilute</h2>
+<div class="grid">
+<div><label>Original gravity</label><input id="og" type="number" step="any" value="1.090"></div>
+<div><label>Final gravity</label><input id="fg" type="number" step="any" value="0.996"></div>
+<div><label>Water-back: current ABV (%)</label><input id="dabv" type="number" step="any" value="14"></div>
+<div><label>Target ABV (%)</label><input id="dtabv" type="number" step="any" value="12"></div>
+</div>
+<div class="verdicts" id="ferment"></div>
+<p class="note">Published homebrew conversion: ABV = (OG - FG) x 131.25. Dilution math is ideal - temperature contraction shrinks real mixtures slightly.</p>
+</main>
+<script src="engine.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const fmt=(v,d=1)=>v.toLocaleString('en-US',{maximumFractionDigits:d,minimumFractionDigits:d});
+function vc(k,n,h){return `<div class="vc"><div class="k">${k}</div><div class="n">${n}</div><div class="h">${h||''}</div></div>`}
+function num(id){const v=parseFloat($(id).value);return isFinite(v)?v:NaN;}
+function showErr(m){const e=$('err');e.textContent=m;e.style.display='block';}
+function hideErr(){$('err').style.display='none';}
+function run(){
+ hideErr();
+ const vol=num('vol'),brix=num('brix'),tbrix=num('tbrix'),style=$('style').value;
+ if(!(vol>0)||!(brix>=0&&brix<=60)||!(tbrix>=0&&tbrix<=60)){showErr('Volume must be positive and Brix values within 0-60.');return;}
+ // must
+ const sg=engine.brixToSG(brix),tsg=engine.brixToSG(tbrix),pabv=engine.potentialABV(brix),ptabv=engine.potentialABV(tbrix);
+ let m=vc('MUST NOW',fmt(brix,1)+' Brix','SG '+sg.sg.toFixed(3)+' (published approximation)');
+ m+=vc('POTENTIAL ABV NOW',fmt(pabv.abv,1)+'%','at Brix x 0.55, a published rule of thumb');
+ m+=vc('TARGET MUST',fmt(tbrix,1)+' Brix','SG '+tsg.sg.toFixed(3)+', potential '+fmt(ptabv.abv,1)+'% ABV');
+ m+=vc('STYLE',style.toUpperCase(),style==='white'?'sulfite target 0.8 ppm molecular (published)':'sulfite target 0.5 ppm molecular (published)');
+ $('must').innerHTML=m;
+ // chapitalization
+ const ch=engine.chapitalization(vol,brix,tbrix);
+ $('chap').innerHTML=ch.error
+  ?`<tr><td class="v" colspan="3" style="color:var(--warn)">${ch.error}</td></tr>`
+  :`<tr><td>Sugar to add</td><td class="v">${fmt(ch.grams,0)} g</td><td>raises ${fmt(ch.deltaBrix,1)} Brix, worth about +${fmt(ch.abvGain,1)}% ABV (published conversion)</td></tr>
+    <tr><td>Per litre</td><td class="v">${fmt(ch.grams/vol,1)} g/L</td><td>dissolve in must, not water, to keep volume honest</td></tr>`;
+ // acid
+ const ta=num('ta'),tta=num('tta');
+ const ac=engine.acidAdjust(vol,ta,tta,$('acidChem').value);
+ $('acid').innerHTML=ac.error
+  ?`<tr><td class="v" colspan="3" style="color:var(--warn)">${ac.error}</td></tr>`
+  :ac.direction==='none'
+   ?`<tr><td colspan="3" class="v">TA already on target - nothing to add</td></tr>`
+   :`<tr><td>${ac.direction==='raise'?'Raise':'Lower'} TA by ${fmt(ac.delta,1)} g/L</td><td class="v">${fmt(ac.grams,0)} g</td><td>${ac.name} for the whole ${fmt(vol,0)} L batch (published rule of thumb)</td></tr>
+     <tr><td>Per litre</td><td class="v">${fmt(ac.grams/vol,2)} g/L</td><td>bench-test a small sample first and re-measure</td></tr>`;
+ // so2
+ const ph=num('ph');
+ const so=engine.so2Plan(ph,style,vol);
+ $('so2').innerHTML=so.error
+  ?vc('SO2','&mdash;',so.error)
+  :vc('MOLECULAR FRACTION',fmt(so.fraction*100,1)+'%','of free SO2 is active molecular SO2 at pH '+fmt(ph,2)+' (published equilibrium, pKa 1.81)')
+   +vc('FREE SO2 NEEDED',fmt(so.freePpm,0)+' ppm','to hold '+so.molecularTarget+' ppm molecular for '+style)
+   +vc('KMS TO ADD',fmt(so.kmsGrams,2)+' g','potassium metabisulfite, 57.6% SO2 by weight (published)');
+ $('so2note').textContent=so.error?'':so.note+' The same ppm advice fits nobody: at higher pH far less of your free SO2 is active, which is why the dose climbs so steeply.';
+ // fortify
+ const ft=engine.fortify(vol,num('fabv'),num('sabv'),num('ftabv'));
+ $('fort').innerHTML=ft.error
+  ?`<tr><td class="v" colspan="3" style="color:var(--warn)">${ft.error}</td></tr>`
+  :`<tr><td>Spirit to add</td><td class="v">${fmt(ft.spiritVol,2)} L</td><td>into ${fmt(vol,0)} L of wine</td></tr>
+    <tr><td>Final volume</td><td class="v">${fmt(ft.finalVol,1)} L</td><td>${ft.note}</td></tr>`;
+ // ferment + dilute
+ const ab=engine.abvFromGravity(num('og'),num('fg'));
+ const dl=engine.dilute(vol,num('dabv'),num('dtabv'));
+ let f='';
+ f+=ab.error?vc('FERMENT ABV','&mdash;',ab.error):vc('FERMENT ABV',fmt(ab.abv,1)+'%','OG '+num('og')+' to FG '+num('fg')+' - apparent attenuation '+fmt(ab.attenuation,0)+'% (published conversion)');
+ f+=dl.error?vc('WATER BACK','&mdash;',dl.error):vc('WATER BACK',fmt(dl.water,2)+' L','added to reach '+fmt(num('dtabv'),1)+'% ABV, final volume '+fmt(dl.finalVol,1)+' L');
+ $('ferment').innerHTML=f;
+}
+document.querySelectorAll('input,select').forEach(i=>i.addEventListener('input',run));
+run();
+</script>
+</body>
+</html>
